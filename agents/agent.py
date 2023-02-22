@@ -130,7 +130,8 @@ class ThorAgent:
         self.reward, self.done, self.info = self.episode.step(action[0, 0])
 
         if self.verbose:
-            print(self.episode.actions_list[action])
+            pass
+            #print(self.episode.actions_list[action])
         self.probs.append(prob)
         self.entropies.append(entropy)
         self.values.append(out.value)
