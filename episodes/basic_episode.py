@@ -117,8 +117,7 @@ class BasicEpisode(Episode):
             self.seen_list = []
 
             if args.vis:
-                pass
-                #print("Success:", action_was_successful)
+                print("Success:", action_was_successful)
         else:
             action_was_successful = self.environment.last_action_success
 
