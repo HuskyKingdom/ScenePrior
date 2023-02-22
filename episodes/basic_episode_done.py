@@ -74,7 +74,8 @@ class BasicEpisode(Episode):
         action = self.actions_list[action_as_int]
 
         if args.vis:
-            print(action)
+            pass
+            # print(action)
 
         if action["action"] != DONE:
             self.environment.step(action)
