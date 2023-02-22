@@ -73,7 +73,7 @@ class BasicEpisode(Episode):
 
         action = self.actions_list[action_as_int]
 
-        if args.vis:
+        if args.vis and 1==2:
             print(action)
 
         if action["action"] != DONE:
