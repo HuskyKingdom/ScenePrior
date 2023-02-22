@@ -178,7 +178,7 @@ def end_episode(
         "ep_length": player.eps_len,
         "success": int(player.success),
     }
-    #print(results)
+    print(results)
 
     results.update(**kwargs)
     res_queue.put(results)
