@@ -149,13 +149,13 @@ class AddNorm(nn.Module):
 
 class PositionWiseFFN(nn.Module): 
 
-    def __init__(self,ffn_num_input,ffn_num_hiddens,ffn_num_output,**kwargs):
+    def __init__(self,ffn_num_input,ffn_num_hiddens,ffn_num_output,**kwargs): # input 1024 hiddens 512 output 512
         super(PositionWiseFFN,self).__init__(**kwargs)
 
         self.dense1 = nn.Linear(ffn_num_input,ffn_num_hiddens)
         self.relu = nn.ReLU()
         self.dense2 = nn.Linear(ffn_num_hiddens,ffn_num_output)
-        print("{},{},{}".format(ffn_num_input,ffn_num_hiddens,ffn_num_output))
+          
 
     def forward(self,X):
         return self.dense2(self.relu(self.dense1(X)))
@@ -163,7 +163,6 @@ class PositionWiseFFN(nn.Module):
 
 def transpose_qkv(X,num_heads): # input (b,num_QKV,len_QKV) e.g. (b,num_QKV,num_hidden)
 
-    print(X.shape)
 
     X = X.reshape(X.shape[0],X.shape[1],num_heads,-1) # (b,num_QKV,num_heads,num_hidden/num_heads) 
 
