@@ -54,10 +54,11 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.hidden_state_sz = hidden_state_sz
         self.lstm = nn.LSTMCell(lstm_input_sz, hidden_state_sz)
         num_outputs = action_space
-        self.critic_linear = nn.Linear(2048, 1)
-        self.actor_linear = nn.Linear(2048, num_outputs)
+        self.critic_linear = nn.Linear(1027, 1)
+        self.actor_linear = nn.Linear(1027, num_outputs)
 
-        self.sqmapping = nn.Linear(2054,2048) # for positional encoding
+        self.sqmapping = nn.Linear(2054,2048) # for chunking
+        self.r_sqmapping = nn.Linear(2048,1027) # resume
 
         self.apply(weights_init)
 
@@ -175,7 +176,9 @@ class TRANSFORMER_SP(torch.nn.Module):
 
 
 
-        x = x.view(1,-1) # (2048)
+        x = x.view(1,-1) # (1,2048)
+        x = self.r_sqmapping(x) # (1,1027)
+
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
