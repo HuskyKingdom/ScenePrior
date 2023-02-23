@@ -55,6 +55,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.critic_linear = nn.Linear(hidden_state_sz, 1)
         self.actor_linear = nn.Linear(hidden_state_sz, num_outputs)
 
+        self.sqmapping = nn.Linear(1027,1000) # for positional encoding
+
         self.apply(weights_init)
 
         relu_gain = nn.init.calculate_gain("relu")
@@ -153,6 +155,10 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         
         x = torch.cat((embedding, prev_hidden), dim=0) # embedding :(2,1027) 2 tokens with dimension N*5+10+512
+
+        x = self.sqmapping(x) # for positional encoding
+
+        print(x.shape)
 
         x = self.TFencoder(x,None) # embedding :(2,1027,512)
 
