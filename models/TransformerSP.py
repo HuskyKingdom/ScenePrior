@@ -167,9 +167,10 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.unsqueeze(0) # (1,16,128) adding batch size
 
+        x = self.TFencoder(x,None) # embedding :(2,1000,512)
+
         print("x shape is now : {}".format(x.shape))
 
-        x = self.TFencoder(x,None) # embedding :(2,1000,512)
 
 
         x = x.view(-1,512) # (2000,512)
