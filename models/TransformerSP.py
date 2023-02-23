@@ -45,7 +45,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
         
-        self.TFencoder = TransformerEncoder(200,512,512,512,512,[1000,512],512,hidden_state_sz,16,4,0.3,use_bias=True)
+        self.TFencoder = TransformerEncoder(200,128,128,128,128,[1000,128],128,256,16,4,0.3,use_bias=True)
+
         
         
 
@@ -56,7 +57,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.critic_linear = nn.Linear(hidden_state_sz, 1)
         self.actor_linear = nn.Linear(hidden_state_sz, num_outputs)
 
-        self.sqmapping = nn.Linear(2054,1024) # for positional encoding
+        self.sqmapping = nn.Linear(2054,2048) # for positional encoding
 
         self.apply(weights_init)
 
@@ -158,15 +159,15 @@ class TRANSFORMER_SP(torch.nn.Module):
         x = torch.cat((embedding, prev_hidden), dim=1) # embedding :(1,2054)
 
 
-        x = self.sqmapping(x) # (1,1024) 
+        x = self.sqmapping(x) # (1,2048) 
 
-        x = x.squeeze(0) # (1024) removing batch size
+        x = x.squeeze(0) # (2048) removing batch size
 
-        print("x shape is now : {}".format(x.shape))
-
-        x = x.reshape(x,())
+        x = x.reshape(x,(16,128))
 
         x = self.TFencoder(x,None) # embedding :(2,1000,512)
+
+        print("x shape is now : {}".format(x.shape))
 
         x = x.view(-1,512) # (2000,512)
 
