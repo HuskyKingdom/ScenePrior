@@ -149,9 +149,6 @@ class TRANSFORMER_SP(torch.nn.Module):
 
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,N*5+10+512) 
 
-        print(type(embedding))
-        print(type(prev_hidden))
-
         x = torch.cat((embedding, prev_hidden), dim=0) # embedding :(2,1027) 2 tokens with dimension N*5+10+512
 
         x = self.TFencoder(embedding,None) # embedding :(2,1027,1024)

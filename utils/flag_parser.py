@@ -233,7 +233,7 @@ def parse_arguments():
         "--agent_type",
         type=str,
         default="NavigationAgent",
-        help="Which type of agent. Choices are NavigationAgent or RandomAgent.",
+        help="Which type of agent. Choices are NavigationAgent or RandomAgent or TF_Nav.",
     )
 
     parser.add_argument(

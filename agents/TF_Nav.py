@@ -5,8 +5,8 @@ from models.model_io import ModelInput
 from .agent import ThorAgent
 
 
-class NavigationAgent(ThorAgent):
-    """ A navigation agent who learns with pretrained embeddings. """
+class TF_Nav(ThorAgent):
+    """ TF nav agents. """
 
     def __init__(self, create_model, args, rank, gpu_id):
         max_episode_length = args.max_episode_length
@@ -17,7 +17,7 @@ class NavigationAgent(ThorAgent):
         episode_constructor = episode_class(args.episode_type)
         episode = episode_constructor(args, gpu_id, args.strict_done)
 
-        super(NavigationAgent, self).__init__(
+        super(TF_Nav, self).__init__(
             create_model(args), args, rank, episode, max_episode_length, gpu_id
         )
         self.hidden_state_sz = hidden_state_sz
@@ -46,7 +46,7 @@ class NavigationAgent(ThorAgent):
 
     def reset_hidden(self):
 
-        if self.gpu_id >= 0:
+        """if self.gpu_id >= 0:
             with torch.cuda.device(self.gpu_id):
                 self.hidden = (
                     torch.zeros(1, self.hidden_state_sz).cuda(),
@@ -59,8 +59,16 @@ class NavigationAgent(ThorAgent):
             )
         self.last_action_probs = gpuify(
             torch.zeros((1, self.action_space)), self.gpu_id
-        )
+        )"""
 
+        if self.gpu_id >= 0: # for TF
+            with torch.cuda.device(self.gpu_id):
+                self.hidden = torch.zeros(1, self.hidden_state_sz).cuda()
+        else:
+            self.hidden = torch.zeros(1, self.hidden_state_sz).cuda()
+        self.last_action_probs = gpuify(
+            torch.zeros((1, self.action_space)), self.gpu_id
+        )
 
     def repackage_hidden(self):
         self.hidden = (self.hidden[0].detach(), self.hidden[1].detach())
