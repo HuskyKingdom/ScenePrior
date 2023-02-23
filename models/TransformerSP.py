@@ -45,7 +45,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
        
-        self.TFencoder = TransformerEncoder(200,128,128,128,128,[128,128],128,256,8,4,0.3,use_bias=True)
+        self.TFencoder = TransformerEncoder(200,128,128,128,128,[16,128],128,256,8,4,0.3,use_bias=True)
 
         
         
