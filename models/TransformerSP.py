@@ -163,7 +163,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.squeeze(0) # (2048) removing batch size
 
-        x = x.reshape(x,(16,128))
+        x = x.reshape((16,128))
 
         x = self.TFencoder(x,None) # embedding :(2,1000,512)
 
