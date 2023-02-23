@@ -158,8 +158,6 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = self.sqmapping(x) # for positional encoding
 
-        print(x.shape)
-
         x = self.TFencoder(x,None) # embedding :(2,1027,512)
 
         x = x.view(-1,512)

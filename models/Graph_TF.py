@@ -163,6 +163,8 @@ class PositionWiseFFN(nn.Module):
 
 def transpose_qkv(X,num_heads): # input (b,num_QKV,len_QKV) -> (b,num_QKV,num_hidden)
 
+    print(X.shape)
+
     X = X.reshape(X.shape[0],X.shape[1],num_heads,-1) # (b,num_QKV,num_heads,num_hidden/num_heads) 
 
     X = X.permute(0,2,1,3) # (b,num_heads,num_QKV,num_hidden/num_heads) 
