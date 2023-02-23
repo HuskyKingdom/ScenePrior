@@ -111,21 +111,19 @@ class EncoderBlock(nn.Module): # individul encoder block
 
 
 class TransformerEncoder(d2l.Encoder):
-    def __init__(self, vocab_size, num_hiddens, ffn_num_hiddens,
+    def __init__(self, vocab_size, key_size, query_size, value_size,
+                 num_hiddens, norm_shape, ffn_num_input, ffn_num_hiddens,
                  num_heads, num_layers, dropout, use_bias=False, **kwargs):
         super(TransformerEncoder, self).__init__(**kwargs)
         self.num_hiddens = num_hiddens
         self.embedding = nn.Embedding(vocab_size, num_hiddens)
         self.pos_encoding = d2l.PositionalEncoding(num_hiddens, dropout)
         self.blks = nn.Sequential()
-
-        print("{},{},{},{}.".format(num_hiddens, ffn_num_hiddens, num_heads, dropout,
-                             use_bias))
-
         for i in range(num_layers):
             self.blks.add_module("block"+str(i),
-                EncoderBlock(num_hiddens, ffn_num_hiddens, num_heads, dropout,
-                             use_bias))
+                EncoderBlock(key_size, query_size, value_size, num_hiddens,
+                             norm_shape, ffn_num_input, ffn_num_hiddens,
+                             num_heads, dropout, use_bias))
 
     def forward(self, X, valid_lens, *args):
 
