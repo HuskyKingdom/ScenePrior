@@ -153,10 +153,12 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         return out, None
 
-    def a3clstm(self, embedding, prev_hidden): # embedding :(1,N*5+10+512) 
+    def a3clstm(self, embedding, prev_hidden): # embedding :(1,1027) 
 
         
         x = torch.cat((embedding, prev_hidden), dim=1) # embedding :(1,2054)
+
+        print("x shape is now : {}".format(x.shape)) 
 
 
         x = self.sqmapping(x) # (1,2048) 
@@ -169,7 +171,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = self.TFencoder(x,None) # embedding : (1,16,128)
 
-        print("x shape is now : {}".format(x.shape)) 
+        
 
 
 
