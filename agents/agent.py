@@ -121,10 +121,10 @@ class ThorAgent:
 
         model_input, out = self.eval_at_state(model_options)
 
-        print(out.shape)
-        
         self.hidden = out.hidden
+
         prob = F.softmax(out.logit, dim=1)
+        print(prob.shape)
         action = prob.multinomial(1).data
         log_prob = F.log_softmax(out.logit, dim=1)
         self.last_action_probs = prob
