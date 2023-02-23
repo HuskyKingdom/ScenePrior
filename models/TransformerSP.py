@@ -45,7 +45,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
         
-        TransformerEncoder(200,1024,1024,1024,1024,[1027,1024],1024,hidden_state_sz,12,4,0.3)
+        self.TFencoder = TransformerEncoder(200,1024,1024,1024,1024,[1027,1024],1024,hidden_state_sz,12,4,0.3)
 
         lstm_input_sz = 10 + n * 5 + 512
         self.hidden_state_sz = hidden_state_sz
@@ -149,7 +149,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,N*5+10+512) 
 
-        print(embedding.shape)
+        
         x = torch.cat((embedding, prev_hidden), dim=0) # embedding :(2,1027) 2 tokens with dimension N*5+10+512
 
         x = self.TFencoder(embedding,None) # embedding :(2,1027,1024)
