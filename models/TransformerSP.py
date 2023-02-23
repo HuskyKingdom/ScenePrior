@@ -162,7 +162,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.squeeze(0) # (1024) removing batch size
 
-        print("x shape is now : {}".format(x))
+        print("x shape is now : {}".format(x.shape))
 
         x = x.reshape(x,())
 
