@@ -54,8 +54,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.hidden_state_sz = hidden_state_sz
         self.lstm = nn.LSTMCell(lstm_input_sz, hidden_state_sz)
         num_outputs = action_space
-        self.critic_linear = nn.Linear(hidden_state_sz, 1)
-        self.actor_linear = nn.Linear(hidden_state_sz, num_outputs)
+        self.critic_linear = nn.Linear(2048, 1)
+        self.actor_linear = nn.Linear(2048, num_outputs)
 
         self.sqmapping = nn.Linear(2054,2048) # for positional encoding
 
@@ -165,15 +165,15 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.reshape((16,128)) # (16,128)
 
-        # x = x.unsqueeze(0) # (1,16,128) adding batch size
+        x = x.unsqueeze(0) # (1,16,128) adding batch size
 
         x = self.TFencoder(x,None) # embedding : (1,16,128)
 
-        print("x shape is now : {}".format(x.shape))
+        print("x shape is now : {}".format(x.shape)) 
 
 
 
-        x = x.view(-1,512) # (2000,512)
+        x = x.view(-1) # (2048)
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
