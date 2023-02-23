@@ -150,6 +150,9 @@ class ThorAgent:
 
         self._increment_episode_length()
 
+        print(self.episode.strict_done)
+        print(action)
+
         if self.episode.strict_done and action == DONE_ACTION_INT:
             self.success = self.info
             self.done = True
