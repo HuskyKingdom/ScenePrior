@@ -161,7 +161,7 @@ class PositionWiseFFN(nn.Module):
         return self.dense2(self.relu(self.dense1(X)))
 
 
-def transpose_qkv(X,num_heads): # input (b,num_QKV,len_QKV) -> (b,num_QKV,num_hidden)
+def transpose_qkv(X,num_heads): # input (b,num_QKV,len_QKV) e.g. (b,num_QKV,num_hidden)
 
     print(X.shape)
 
