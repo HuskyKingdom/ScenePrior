@@ -118,6 +118,10 @@ class TransformerEncoder(d2l.Encoder):
         self.embedding = nn.Embedding(vocab_size, num_hiddens)
         self.pos_encoding = d2l.PositionalEncoding(num_hiddens, dropout)
         self.blks = nn.Sequential()
+
+        print("{},{},{},{}.".format(num_hiddens, ffn_num_hiddens, num_heads, dropout,
+                             use_bias))
+
         for i in range(num_layers):
             self.blks.add_module("block"+str(i),
                 EncoderBlock(num_hiddens, ffn_num_hiddens, num_heads, dropout,
