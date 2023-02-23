@@ -154,7 +154,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         
         x = torch.cat((embedding, prev_hidden), dim=0) # embedding :(2,1027) 2 tokens with dimension N*5+10+512
 
-        x = self.TFencoder(embedding,None) # embedding :(2,1027,512)
+        x = self.TFencoder(x,None) # embedding :(2,1027,512)
 
         x = x.view(-1,512)
 
