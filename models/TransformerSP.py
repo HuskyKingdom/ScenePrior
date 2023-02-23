@@ -155,13 +155,17 @@ class TRANSFORMER_SP(torch.nn.Module):
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,N*5+10+512) 
 
         
-        x = torch.cat((embedding, prev_hidden), dim=0) # embedding :(2,1027) 2 tokens with dimension N*5+10+512
+        x = torch.cat((embedding, prev_hidden), dim=1) # embedding :(1,2054)
 
-        x = self.sqmapping(x) # for positional encoding
+        # x = self.sqmapping(x) # for positional encoding (2,1000)
 
-        x = self.TFencoder(x,None) # embedding :(2,1027,512)
+        x = x.squeeze(0) # (2054) removing batch size
 
-        x = x.view(-1,512)
+        print("x shape is now {}".format(x.shape))
+
+        x = self.TFencoder(x,None) # embedding :(2,1000,512)
+
+        x = x.view(-1,512) # (2000,512)
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
