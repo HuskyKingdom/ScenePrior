@@ -120,6 +120,9 @@ class ThorAgent:
             self.model.eval()
 
         model_input, out = self.eval_at_state(model_options)
+
+        print(out.shape)
+        
         self.hidden = out.hidden
         prob = F.softmax(out.logit, dim=1)
         action = prob.multinomial(1).data
@@ -150,8 +153,7 @@ class ThorAgent:
 
         self._increment_episode_length()
 
-        print(self.episode.strict_done)
-        print(action)
+    
 
         if self.episode.strict_done and action == DONE_ACTION_INT:
             self.success = self.info
