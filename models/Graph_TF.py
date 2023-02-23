@@ -128,7 +128,7 @@ class TransformerEncoder(d2l.Encoder):
     def forward(self, X, valid_lens, *args):
 
         # Embedding is scaled by sqrt of embedding dimensions to match the position encoding (-1,1)
-        
+        print(X.shape)
         X = self.pos_encoding(self.embedding(X.long()) * math.sqrt(self.num_hiddens)) 
         self.attention_weights = [None] * len(self.blks)
         for i, blk in enumerate(self.blks):
