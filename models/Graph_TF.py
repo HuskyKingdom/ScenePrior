@@ -128,7 +128,6 @@ class TransformerEncoder(d2l.Encoder):
     def forward(self, X, valid_lens, *args):
 
         # Embedding is scaled by sqrt of embedding dimensions to match the position encoding (-1,1)
-        print(X.shape)
         X = self.pos_encoding(self.embedding(X.long()) * math.sqrt(self.num_hiddens)) 
         self.attention_weights = [None] * len(self.blks)
         for i, blk in enumerate(self.blks):
@@ -148,7 +147,7 @@ class AddNorm(nn.Module):
         return self.ln(self.dropout(Y) + X)
 
 
-class PositionWiseFFN(nn.Module):
+class PositionWiseFFN(nn.Module): 
 
     def __init__(self,ffn_num_input,ffn_num_hiddens,ffn_num_output,**kwargs):
         super(PositionWiseFFN,self).__init__(**kwargs)
@@ -156,6 +155,7 @@ class PositionWiseFFN(nn.Module):
         self.dense1 = nn.Linear(ffn_num_input,ffn_num_hiddens)
         self.relu = nn.ReLU()
         self.dense2 = nn.Linear(ffn_num_hiddens,ffn_num_output)
+        print("{},{},{}".format(ffn_num_input,ffn_num_hiddens,ffn_num_output))
 
     def forward(self,X):
         return self.dense2(self.relu(self.dense1(X)))
