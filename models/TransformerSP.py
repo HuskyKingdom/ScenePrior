@@ -45,7 +45,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
         
-        self.TFencoder = TransformerEncoder(200,128,128,128,128,[1000,128],128,256,16,4,0.3,use_bias=True)
+        self.TFencoder = TransformerEncoder(200,128,128,128,128,[128,128],128,256,16,4,0.3,use_bias=True)
 
         
         
@@ -164,6 +164,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         x = x.squeeze(0) # (2048) removing batch size
 
         x = x.reshape((16,128))
+
+        print("x shape is now : {}".format(x.shape))
 
         x = self.TFencoder(x,None) # embedding :(2,1000,512)
 
