@@ -63,9 +63,9 @@ class TF_Nav(ThorAgent):
 
         if self.gpu_id >= 0: # for TF
             with torch.cuda.device(self.gpu_id):
-                self.hidden = torch.zeros(1, self.hidden_state_sz).cuda()
+                self.hidden = torch.zeros(1, 1027).cuda()
         else:
-            self.hidden = torch.zeros(1, self.hidden_state_sz).cuda()
+            self.hidden = torch.zeros(1, 1027).cuda()
         self.last_action_probs = gpuify(
             torch.zeros((1, self.action_space)), self.gpu_id
         )
