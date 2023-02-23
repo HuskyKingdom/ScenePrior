@@ -71,7 +71,7 @@ class TF_Nav(ThorAgent):
         )
 
     def repackage_hidden(self):
-        self.hidden = (self.hidden[0].detach(), self.hidden[1].detach())
+        self.hidden = self.hidden.detach()
         self.last_action_probs = self.last_action_probs.detach()
 
     def state(self):

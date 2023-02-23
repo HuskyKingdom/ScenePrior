@@ -159,8 +159,6 @@ class TRANSFORMER_SP(torch.nn.Module):
         
         x = torch.cat((embedding, prev_hidden), dim=1) # embedding :(1,2054)
 
-        print("x shape is now : {}".format(x.shape)) 
-
 
         x = self.sqmapping(x) # (1,2048) 
 
