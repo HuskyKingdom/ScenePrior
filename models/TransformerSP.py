@@ -173,7 +173,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
 
 
-        x = x.view(-1) # (2048)
+        x = x.view(1,-1) # (2048)
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
