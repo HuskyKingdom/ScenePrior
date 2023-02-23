@@ -45,7 +45,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
         
-        self.TFencoder = TransformerEncoder(200,1024,1024,1024,1024,[1027,1024],1024,hidden_state_sz,12,4,0.3,use_bias=True)
+        self.TFencoder = TransformerEncoder(200,512,512,512,512,[1027,512],1024,hidden_state_sz,12,4,0.3,use_bias=True)
+        
 
         lstm_input_sz = 10 + n * 5 + 512
         self.hidden_state_sz = hidden_state_sz
@@ -153,9 +154,9 @@ class TRANSFORMER_SP(torch.nn.Module):
         
         x = torch.cat((embedding, prev_hidden), dim=0) # embedding :(2,1027) 2 tokens with dimension N*5+10+512
 
-        x = self.TFencoder(embedding,None) # embedding :(2,1027,1024)
+        x = self.TFencoder(embedding,None) # embedding :(2,1027,512)
 
-        x = x.view(-1,1024)
+        x = x.view(-1,512)
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
