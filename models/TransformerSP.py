@@ -45,7 +45,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
         
-        self.TFencoder = TransformerEncoder(200,1024,1024,1024,1024,[1027,1024],1024,hidden_state_sz,12,4,0.3)
+        self.TFencoder = TransformerEncoder(200,1024,1024,1024,1024,[1027,1024],1024,hidden_state_sz,12,4,0.3,use_bias=True)
 
         lstm_input_sz = 10 + n * 5 + 512
         self.hidden_state_sz = hidden_state_sz
@@ -55,6 +55,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.actor_linear = nn.Linear(hidden_state_sz, num_outputs)
 
         self.apply(weights_init)
+
         relu_gain = nn.init.calculate_gain("relu")
         self.actor_linear.weight.data = norm_col_init(
             self.actor_linear.weight.data, 0.01
