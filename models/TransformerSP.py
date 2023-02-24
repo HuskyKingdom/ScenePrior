@@ -13,6 +13,8 @@ from .model_io import ModelOutput
 from utils import flag_parser
 from .Graph_TF import TransformerEncoder
 
+from collections import deque
+
 args = flag_parser.parse_arguments()
 
 
@@ -46,6 +48,15 @@ class TRANSFORMER_SP(torch.nn.Module):
 
        
         self.TFencoder = TransformerEncoder(200,128,128,128,128,[16,128],128,256,8,4,0.3,use_bias=True)
+
+        self.sqmapping = nn.Linear(2054,2048) # for chunking
+        self.r_sqmapping = nn.Linear(2048,1027) # resume
+
+        self.embuffer = deque(maxlen=4)
+
+        for i in range(4):
+            place_holder = torch.zeros(1, 1027).cuda()
+            self.embuffer.append(place_holder)
     
         
         
@@ -57,8 +68,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.critic_linear = nn.Linear(1027, 1)
         self.actor_linear = nn.Linear(1027, num_outputs)
 
-        self.sqmapping = nn.Linear(2054,2048) # for chunking
-        self.r_sqmapping = nn.Linear(2048,1027) # resume
+        
 
         self.apply(weights_init)
 
@@ -116,7 +126,7 @@ class TRANSFORMER_SP(torch.nn.Module):
             y2 = v[3::4]
             objstate[ind][1] = np.sum(x1+x2)/len(x1+x2) / 300
             objstate[ind][2] = np.sum(y1+y2)/len(y1+y2) / 300
-            objstate[ind][3] = abs(max(x2) - min(x1)) * abs(max(y2) - min(y1)) / 300 / 300
+            objstate[ind][3] = abs(max(x2) - minembuffer(x1)) * abs(max(y2) - min(y1)) / 300 / 300
         if args.gpu_ids != -1:
             objstate = objstate.cuda()
             class_onehot = class_onehot.cuda()
@@ -129,7 +139,7 @@ class TRANSFORMER_SP(torch.nn.Module):
     def new_gcn_embed(self, objstate, class_onehot):
         class_word_embed = torch.cat((class_onehot.repeat(self.n, 1), self.all_glove.detach()), dim=1) # (101,101+300) -> (101,401) 
         x = torch.mm(self.A, class_word_embed) 
-        x = F.relu(self.W0(x)) # (101,401)
+        x = F.relu(self.W0(x)) # (101,401)embuffer
         x = torch.mm(self.A, x) 
         x = F.relu(self.W1(x)) # (101,401)
         x = torch.mm(self.A, x) 
@@ -156,20 +166,19 @@ class TRANSFORMER_SP(torch.nn.Module):
 
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,1027) 
 
-        
-        x = torch.cat((embedding, prev_hidden), dim=1) # embedding :(1,2054)
+        self.embuffer.append(embedding) 
 
+        # cating buffer
 
-        x = self.sqmapping(x) # (1,2048) 
+        buffer_items = list(self.embuffer)
 
-        x = x.squeeze(0) # (2048) removing batch size
+        x = torch.cat((buffer_items[0],buffer_items[1],buffer_items[2],buffer_items[3]), dim=0) # (4,1027)
 
-        x = x.reshape((16,128)) # (16,128)
+        x = x.unsqueeze(0) # (1,4,1027) adding batch size
 
-        x = x.unsqueeze(0) # (1,16,128) adding batch size
+        x = self.TFencoder(x,None) # embedding : (1,4,1027)
 
-
-        x = self.TFencoder(x,None) # embedding : (1,16,128)
+        print("x is now in shape {}".format(x.shape))
 
         x = x.view(1,-1) # (1,2048)
         x = self.r_sqmapping(x) # (1,1027)
