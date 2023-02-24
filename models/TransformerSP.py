@@ -47,10 +47,12 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
        
-        self.TFencoder = TransformerEncoder(200,128,128,128,128,[16,128],128,256,8,4,0.3,use_bias=True)
+        self.TFencoder = TransformerEncoder(200,512,512,512,512,[4,512],512,1024,8,4,0.3,use_bias=True)
 
-        self.sqmapping = nn.Linear(2054,2048) # for chunking
-        self.r_sqmapping = nn.Linear(2048,1027) # resume
+        self.mid_mapping = nn.Linear(1027,512)
+
+        """self.sqmapping = nn.Linear(2054,2048) # for chunking
+        self.r_sqmapping = nn.Linear(2048,1027) # resume"""
 
         self.embuffer = deque(maxlen=4)
 
@@ -174,9 +176,11 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = torch.cat((buffer_items[0],buffer_items[1],buffer_items[2],buffer_items[3]), dim=0) # (4,1027)
 
-        x = x.unsqueeze(0) # (1,4,1027) adding batch size
+        x = self.mid_mapping(x) # (4,512)
 
-        x = self.TFencoder(x,None) # embedding : (1,4,1027)
+        x = x.unsqueeze(0) # (1,4,512) adding batch size
+
+        x = self.TFencoder(x,None) # embedding : (1,4,512)
 
         print("x is now in shape {}".format(x.shape))
 
