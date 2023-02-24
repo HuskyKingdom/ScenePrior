@@ -126,7 +126,7 @@ class TRANSFORMER_SP(torch.nn.Module):
             y2 = v[3::4]
             objstate[ind][1] = np.sum(x1+x2)/len(x1+x2) / 300
             objstate[ind][2] = np.sum(y1+y2)/len(y1+y2) / 300
-            objstate[ind][3] = abs(max(x2) - minembuffer(x1)) * abs(max(y2) - min(y1)) / 300 / 300
+            objstate[ind][3] = abs(max(x2) - min(x1)) * abs(max(y2) - min(y1)) / 300 / 300
         if args.gpu_ids != -1:
             objstate = objstate.cuda()
             class_onehot = class_onehot.cuda()
