@@ -168,11 +168,12 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.unsqueeze(0) # (1,16,128) adding batch size
 
-        x = self.TFencoder(x,None) # embedding : (1,16,128)
+        encoder_layer = nn.TransformerEncoderLayer(d_model=128, nhead=8)
+        transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=6)
 
-        
+        x = transformer_encoder(x)
 
-
+        # x = self.TFencoder(x,None) # embedding : (1,16,128)
 
         x = x.view(1,-1) # (1,2048)
         x = self.r_sqmapping(x) # (1,1027)
