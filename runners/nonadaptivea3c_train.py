@@ -83,6 +83,7 @@ def nonadaptivea3c_train(
             if compute_grad:
                 # Compute gradient.
                 player.model.zero_grad()
+                print("Total_loss = {}".format(loss["total_loss"]))
                 loss["total_loss"].backward()
                 torch.nn.utils.clip_grad_norm_(player.model.parameters(), 100.0)
                 # Transfer gradient to shared model and step optimizer.
