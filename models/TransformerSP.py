@@ -183,7 +183,7 @@ class TRANSFORMER_SP(torch.nn.Module):
     def forward(self, model_input, model_options):
 
         state = model_input.state
-        print("shape of the state is {}".format(state.shape))
+        
         objbb = model_input.objbb
         p_embedding = model_input.hidden
 

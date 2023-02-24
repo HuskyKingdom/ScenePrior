@@ -75,6 +75,7 @@ class TF_Nav(ThorAgent):
         self.last_action_probs = self.last_action_probs.detach()
 
     def state(self):
+        print("shape of the state is {}".format(self.episode.state_for_agent().shape))
         return self.preprocess_frame(self.episode.state_for_agent())
 
     def exit(self):
