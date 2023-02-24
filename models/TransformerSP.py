@@ -46,9 +46,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
        
         self.TFencoder = TransformerEncoder(200,128,128,128,128,[16,128],128,256,8,4,0.3,use_bias=True)
-        self.encoder_layer = nn.TransformerEncoderLayer(d_model=128, nhead=8)
-        self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=6)
-
+    
         
         
 
@@ -129,18 +127,18 @@ class TRANSFORMER_SP(torch.nn.Module):
         return objstate, class_onehot
 
     def new_gcn_embed(self, objstate, class_onehot):
-        class_word_embed = torch.cat((class_onehot.repeat(self.n, 1), self.all_glove.detach()), dim=1)
-        x = torch.mm(self.A, class_word_embed)
-        x = F.relu(self.W0(x))
+        class_word_embed = torch.cat((class_onehot.repeat(self.n, 1), self.all_glove.detach()), dim=1) # (101,101+300) -> (101,401) 
+        x = torch.mm(self.A, class_word_embed) 
+        x = F.relu(self.W0(x)) # (101,401)
+        x = torch.mm(self.A, x) 
+        x = F.relu(self.W1(x)) # (101,401)
+        x = torch.mm(self.A, x) 
+        x = F.relu(self.W2(x)) # (101,5)
+        x = torch.cat((x, objstate), dim=1) # (101,5) -> (101,10)  
         x = torch.mm(self.A, x)
-        x = F.relu(self.W1(x))
-        x = torch.mm(self.A, x)
-        x = F.relu(self.W2(x))
-        x = torch.cat((x, objstate), dim=1)
-        x = torch.mm(self.A, x)
-        x = F.relu(self.W3(x))
-        x = x.view(1, self.n)
-        x = self.final_mapping(x)
+        x = F.relu(self.W3(x)) # (101,1)
+        x = x.view(1, self.n) # (1,101)
+        x = self.final_mapping(x) # (1,512)
         return x
 
     def embedding(self, state, target, action_probs, objbb):
@@ -148,10 +146,10 @@ class TRANSFORMER_SP(torch.nn.Module):
         objstate, class_onehot = self.list_from_raw_obj(objbb, target)
         action_embedding_input = action_probs
         action_embedding = F.relu(self.embed_action(action_embedding_input))
-        x = objstate
-        x = x.view(1, -1)
-        x = torch.cat((x, action_embedding), dim=1)
-        out = torch.cat((x, self.new_gcn_embed(objstate, class_onehot)), dim=1) # (1,N*5+10+512)
+        x = objstate # (101,5)
+        x = x.view(1, -1) #  (1,505)
+        x = torch.cat((x, action_embedding), dim=1) # (1,515)
+        out = torch.cat((x, self.new_gcn_embed(objstate, class_onehot)), dim=1) # (1,N*5+10+512) -> (1,1027)
 
 
         return out, None
@@ -170,11 +168,8 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.unsqueeze(0) # (1,16,128) adding batch size
 
-        
 
-        x = self.transformer_encoder(x)
-
-        # x = self.TFencoder(x,None) # embedding : (1,16,128)
+        x = self.TFencoder(x,None) # embedding : (1,16,128)
 
         x = x.view(1,-1) # (1,2048)
         x = self.r_sqmapping(x) # (1,1027)
@@ -188,6 +183,7 @@ class TRANSFORMER_SP(torch.nn.Module):
     def forward(self, model_input, model_options):
 
         state = model_input.state
+        print("shape of the state is {}".format(state.shape))
         objbb = model_input.objbb
         p_embedding = model_input.hidden
 
