@@ -141,7 +141,7 @@ class TRANSFORMER_SP(torch.nn.Module):
     def new_gcn_embed(self, objstate, class_onehot):
         class_word_embed = torch.cat((class_onehot.repeat(self.n, 1), self.all_glove.detach()), dim=1) # (101,101+300) -> (101,401) 
         x = torch.mm(self.A, class_word_embed) 
-        x = F.relu(self.W0(x)) # (101,401)embuffer
+        x = F.relu(self.W0(x)) # (101,401)
         x = torch.mm(self.A, x) 
         x = F.relu(self.W1(x)) # (101,401)
         x = torch.mm(self.A, x) 
@@ -178,7 +178,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = self.mid_mapping(x) # (4,512)
 
-        x = x.unsqueeze(0) # (1,4,512) adding batch size
+        # x = x.unsqueeze(0) # (1,4,512) adding batch size
 
         x = self.TFencoder(x,None) # embedding : (1,4,512)
 
