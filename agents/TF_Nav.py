@@ -36,6 +36,8 @@ class TF_Nav(ThorAgent):
         model_input.hidden = self.hidden
         model_input.target_class_embedding = self.episode.glove_embedding
         model_input.action_probs = self.last_action_probs
+        
+        model_input.img = self.get_img()
 
         return model_input, self.model.forward(model_input, model_options)
 
@@ -75,7 +77,6 @@ class TF_Nav(ThorAgent):
         self.last_action_probs = self.last_action_probs.detach()
 
     def state(self):
-        print("shape of the state is {}".format(self.episode.state_for_agent().shape))
         return self.preprocess_frame(self.episode.state_for_agent())
 
     def exit(self):
@@ -83,3 +84,7 @@ class TF_Nav(ThorAgent):
 
     def objstate(self):
         return self.episode.objstate_for_agent()
+
+
+    def get_img(self):
+        return self.episode._env.controller.get_image()
