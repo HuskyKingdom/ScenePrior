@@ -182,6 +182,8 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = self.TFencoder(x,None) # embedding : (1,4,512)
 
+        print("x is now in shape {}".format(x.shape))
+
         x = x.view(1,-1) # (1,2048)
 
 
