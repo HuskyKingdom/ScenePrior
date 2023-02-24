@@ -172,7 +172,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         
 
-        x = transformer_encoder(x)
+        x = self.transformer_encoder(x)
 
         # x = self.TFencoder(x,None) # embedding : (1,16,128)
 
