@@ -185,7 +185,6 @@ class TRANSFORMER_SP(torch.nn.Module):
         print("x is now in shape {}".format(x.shape))
 
         x = x.view(1,-1) # (1,2048)
-        x = self.r_sqmapping(x) # (1,1027)
 
 
         actor_out = self.actor_linear(x)
