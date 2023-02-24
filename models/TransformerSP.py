@@ -46,6 +46,8 @@ class TRANSFORMER_SP(torch.nn.Module):
 
        
         self.TFencoder = TransformerEncoder(200,128,128,128,128,[16,128],128,256,8,4,0.3,use_bias=True)
+        encoder_layer = nn.TransformerEncoderLayer(d_model=128, nhead=8)
+        transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=6)
 
         
         
@@ -168,8 +170,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = x.unsqueeze(0) # (1,16,128) adding batch size
 
-        encoder_layer = nn.TransformerEncoderLayer(d_model=128, nhead=8)
-        transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=6)
+        
 
         x = transformer_encoder(x)
 
