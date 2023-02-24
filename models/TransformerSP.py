@@ -193,8 +193,8 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         actor_out, critic_out, out = self.a3clstm(x, p_embedding)
 
-        img = model_input.img
-        print("observation has shape:{}".format(img.shape))
+        
+        
 
         return ModelOutput(
             value=critic_out,
