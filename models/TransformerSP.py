@@ -177,15 +177,15 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         buffer_items = list(self.embuffer)
 
-        x = torch.cat((buffer_items[0].detach(),buffer_items[1].detach(),buffer_items[2].detach(),buffer_items[3]), dim=0) # (4,1027)
+        x = torch.cat((buffer_items[0],buffer_items[1],buffer_items[2],buffer_items[3]), dim=0) # (4,1027)
 
         x = self.mid_mapping(x) # (4,512)
 
         x = x.unsqueeze(0) # (1,4,512) adding batch size
 
-        # x = self.TFencoder(x,None) # embedding : (1,4,512)
+        x = self.TFencoder(x,None) # embedding : (1,4,512)
 
-        x = self.transformer_encoder(x)
+        # x = self.transformer_encoder(x)
 
         x = x.view(1,-1) # (1,2048)
 
