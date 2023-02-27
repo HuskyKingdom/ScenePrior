@@ -47,9 +47,9 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
        
-        # self.TFencoder = TransformerEncoder(200,512,512,512,512,[512,512],512,1024,8,4,0.3,use_bias=True)
-        self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8,batch_first=True)
-        self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=6)
+        self.TFencoder = TransformerEncoder(200,512,512,512,512,[512,512],512,1024,8,4,0.3,use_bias=True)
+        # self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8,batch_first=True)
+        # self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=6)
         
 
 
