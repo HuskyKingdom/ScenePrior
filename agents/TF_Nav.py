@@ -41,7 +41,7 @@ class TF_Nav(ThorAgent):
 
         model_input.img = self.get_img()
 
-        dot = make_dot(self.model.forward(model_input, model_options), params=dict(self.model.named_parameters()))
+        dot = make_dot(self.model.forward(model_input, model_options).logit, params=dict(self.model.named_parameters()))
         dot.render(filename='simple_model', format='png')
 
         return model_input, self.model.forward(model_input, model_options)
