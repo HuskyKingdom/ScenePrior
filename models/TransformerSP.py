@@ -53,8 +53,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.mid_mapping = nn.Linear(1027,512)
         self.embuffer = deque(maxlen=2)
         self.K_frame = 0
-        self.last_mapping = nn.Linear(2048,512)
-
+        
 
         for i in range(4):
             place_holder = torch.zeros(1, 1027).cuda()
@@ -190,9 +189,6 @@ class TRANSFORMER_SP(torch.nn.Module):
         # x = self.transformer_encoder(x)
 
         x = x.view(1,-1) # (1,2048)
-
-        x = self.last_mapping(x) # (1,512)
-
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
