@@ -70,8 +70,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.hidden_state_sz = hidden_state_sz
         self.lstm = nn.LSTMCell(lstm_input_sz, hidden_state_sz)
         num_outputs = action_space
-        self.critic_linear = nn.Linear(2048, 1)
-        self.actor_linear = nn.Linear(2048, num_outputs)
+        self.critic_linear = nn.Linear(512, 1)
+        self.actor_linear = nn.Linear(512, num_outputs)
 
         
 
@@ -170,6 +170,13 @@ class TRANSFORMER_SP(torch.nn.Module):
         return out, None
 
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,1027) 
+
+
+        hx, cx = self.lstm(embedding, prev_hidden)
+        x = hx
+        actor_out = self.actor_linear(x)
+        critic_out = self.critic_linear(x)
+        return actor_out, critic_out, (hx, cx)
 
         self.embuffer.append(embedding) 
 
