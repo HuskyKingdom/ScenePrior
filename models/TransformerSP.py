@@ -55,8 +55,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         self.mid_mapping = nn.Linear(1027,512)
 
-        """self.sqmapping = nn.Linear(2054,2048) # for chunking
-        self.r_sqmapping = nn.Linear(2048,1027) # resume"""
+        
 
         self.embuffer = deque(maxlen=4)
 
@@ -178,7 +177,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         buffer_items = list(self.embuffer)
 
-        x = torch.cat((buffer_items[0],buffer_items[1],buffer_items[2],buffer_items[3]), dim=0) # (4,1027)
+        x = torch.cat((buffer_items[0].detach(),buffer_items[1].detach(),buffer_items[2].detach(),buffer_items[3]), dim=0) # (4,1027)
 
         x = self.mid_mapping(x) # (4,512)
 
