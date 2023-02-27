@@ -193,6 +193,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
 
+        print("action : {} ; critic : {}".format(actor_out,critic_out))
+
         return actor_out, critic_out, x
 
     def forward(self, model_input, model_options):
@@ -208,8 +210,6 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         actor_out, critic_out, out = self.a3clstm(x, p_embedding)
 
-        
-        
 
         return ModelOutput(
             value=critic_out,
