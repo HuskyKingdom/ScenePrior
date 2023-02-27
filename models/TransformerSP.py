@@ -66,8 +66,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.hidden_state_sz = hidden_state_sz
         self.lstm = nn.LSTMCell(lstm_input_sz, hidden_state_sz)
         num_outputs = action_space
-        self.critic_linear = nn.Linear(512, 1)
-        self.actor_linear = nn.Linear(512, num_outputs)
+        self.critic_linear = nn.Linear(1024, 1)
+        self.actor_linear = nn.Linear(1024, num_outputs)
 
         
 
@@ -147,7 +147,9 @@ class TRANSFORMER_SP(torch.nn.Module):
         x = F.relu(self.W2(x)) # (101,5)
         x = torch.cat((x, objstate), dim=1) # (101,5) -> (101,10)  
         x = torch.mm(self.A, x)
-        x = F.relu(self.W3(x)) # (101,1)
+        x = F.relu(self.W3(x)) # (101,1) = self.last_mapping(x) # (1,512)
+
+
         x = x.view(1, self.n) # (1,101)
         x = self.final_mapping(x) # (1,512)
         return x
@@ -188,7 +190,7 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         # x = self.transformer_encoder(x)
 
-        x = x.view(1,-1) # (1,2048)
+        x = x.view(1,-1) # (1,1024)
 
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
