@@ -47,17 +47,13 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.embed_action = nn.Linear(action_space, 10)
 
        
-        self.TFencoder = TransformerEncoder(200,512,512,512,512,[4,512],512,1024,8,4,0.3,use_bias=True)
+        self.TFencoder = TransformerEncoder(200,512,512,512,512,[2,512],512,1024,8,4,0.3,use_bias=True)
         # self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8,batch_first=True)
         # self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=6)
-        
-
-
         self.mid_mapping = nn.Linear(1027,512)
+        self.embuffer = deque(maxlen=2)
+        self.K_frame = 0
 
-        
-
-        self.embuffer = deque(maxlen=4)
 
         for i in range(4):
             place_holder = torch.zeros(1, 1027).cuda()
@@ -70,8 +66,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.hidden_state_sz = hidden_state_sz
         self.lstm = nn.LSTMCell(lstm_input_sz, hidden_state_sz)
         num_outputs = action_space
-        self.critic_linear = nn.Linear(512, 1)
-        self.actor_linear = nn.Linear(512, num_outputs)
+        self.critic_linear = nn.Linear(1024, 1)
+        self.actor_linear = nn.Linear(1024, num_outputs)
 
         
 
@@ -172,29 +168,27 @@ class TRANSFORMER_SP(torch.nn.Module):
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,1027) 
 
 
-        hx, cx = self.lstm(embedding, prev_hidden)
-        x = hx
-        actor_out = self.actor_linear(x)
-        critic_out = self.critic_linear(x)
-        return actor_out, critic_out, (hx, cx)
-
-        self.embuffer.append(embedding) 
+        if self.K_frame % 60 == 0:
+            self.embuffer.append(embedding) 
+            print("buffer += 1 ---------------------")
+        
+        self.K_frame += 1 
 
         # cating buffer
 
         buffer_items = list(self.embuffer)
 
-        x = torch.cat((buffer_items[0],buffer_items[1],buffer_items[2],buffer_items[3]), dim=0) # (4,1027)
+        x = torch.cat((buffer_items[0],buffer_items[1]), dim=0) # (2,1027)
 
-        x = self.mid_mapping(x) # (4,512)
+        x = self.mid_mapping(x) # (2,512)
 
-        x = x.unsqueeze(0) # (1,4,512) adding batch size
+        x = x.unsqueeze(0) # (1,2,512) adding batch size
 
-        x = self.TFencoder(x,None) # embedding : (1,4,512)
+        x = self.TFencoder(x,None) # embedding : (1,2,512)
 
         # x = self.transformer_encoder(x)
 
-        x = x.view(1,-1) # (1,2048)
+        x = x.view(1,-1) # (1,1024)
 
 
         actor_out = self.actor_linear(x)
