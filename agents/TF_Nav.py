@@ -4,6 +4,8 @@ from models.model_io import ModelInput
 
 from .agent import ThorAgent
 
+from torchviz import make_dot
+
 
 class TF_Nav(ThorAgent):
     """ TF nav agents. """
@@ -36,8 +38,11 @@ class TF_Nav(ThorAgent):
         model_input.hidden = self.hidden
         model_input.target_class_embedding = self.episode.glove_embedding
         model_input.action_probs = self.last_action_probs
-        
+
         model_input.img = self.get_img()
+
+        dot = make_dot(self.model.forward(model_input, model_options), params=dict(self.model.named_parameters()))
+        dot.render(filename='simple_model', format='png')
 
         return model_input, self.model.forward(model_input, model_options)
 

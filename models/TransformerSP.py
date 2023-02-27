@@ -193,7 +193,6 @@ class TRANSFORMER_SP(torch.nn.Module):
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
 
-        print("action : {} ; critic : {}".format(actor_out,critic_out))
 
         return actor_out, critic_out, x
 
