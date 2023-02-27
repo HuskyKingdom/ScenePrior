@@ -4,6 +4,7 @@ from models.model_io import ModelInput
 
 from .agent import ThorAgent
 
+import sys
 from torchviz import make_dot
 
 
@@ -23,6 +24,7 @@ class TF_Nav(ThorAgent):
             create_model(args), args, rank, episode, max_episode_length, gpu_id
         )
         self.hidden_state_sz = hidden_state_sz
+        self.rank = rank
 
     def eval_at_state(self, model_options):
         model_input = ModelInput()
@@ -42,7 +44,10 @@ class TF_Nav(ThorAgent):
         model_input.img = self.get_img()
 
         dot = make_dot(self.model.forward(model_input, model_options).logit, params=dict(self.model.named_parameters()))
-        dot.render(filename='simple_model', format='png')
+        dot.render(filename='simple_model'+ str(self.rank), format='png')
+        sys.exit()
+
+
 
         return model_input, self.model.forward(model_input, model_options)
 
