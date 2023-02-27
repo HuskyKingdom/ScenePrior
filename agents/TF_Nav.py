@@ -44,7 +44,7 @@ class TF_Nav(ThorAgent):
         model_input.img = self.get_img()
 
         dot = make_dot(self.model.forward(model_input, model_options).logit, params=dict(self.model.named_parameters()))
-        dot.render(filename='/computation_graph/graph'+ str(self.rank), format='png')
+        dot.render(filename='graph'+ str(self.rank), format='png')
         sys.exit()
 
 
