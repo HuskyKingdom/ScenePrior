@@ -107,7 +107,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.W2 = nn.Linear(401, 5, bias=False)
         self.W3 = nn.Linear(10, 1, bias=False)
 
-        self.final_mapping = nn.Linear(n, 512)
+        self.final_mapping = nn.Linear(512, 1)
+        self.final_mapping_t = nn.Linear(101, 512)
 
     def list_from_raw_obj(self, objbb, target):
         objstate = torch.zeros(self.n, 4)
@@ -145,9 +146,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         x = F.relu(self.W0(x)) # (101,401)
 
         x = x.unsqueeze(0) # (1,101,401)
-
         x = F.relu(self.sup_embedding(x)) # (1,101,512)
-
         x = self.TFencoder(x,None) # (1,101,512)
 
 
@@ -161,13 +160,14 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         print("x is now in the shape {}".format(x.shape))
 
-        x = x.view(-1,512)
-
-        
-
+        x = x.squeeze(0) # (101,512)
+        x = F.relu(self.final_mapping(x)) # (101,1)
         x = x.view(1, self.n) # (1,101)
 
-        x = self.final_mapping(x) # (1,512)
+
+        x = self.final_mapping_t(x)
+
+        
 
         return x
 
