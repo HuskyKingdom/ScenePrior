@@ -144,9 +144,9 @@ class TRANSFORMER_SP(torch.nn.Module):
 
         x = F.relu(self.W0(x)) # (101,401)
 
-        x = x.uns
+        x = x.unsqueeze(0) # (1,101,401)
 
-        x = self.TFencoder(x,None)
+        x = self.TFencoder(x,None) # (1,101,512)
 
 
         """x = torch.mm(self.A, x) 
