@@ -159,11 +159,14 @@ class TRANSFORMER_SP(torch.nn.Module):
         x = torch.mm(self.A, x)
         x = F.relu(self.W3(x)) # (101,1) = self.last_mapping(x) # (1,512)"""
 
-        x = x.view(-1,512)
-
         print("x is now in the shape {}".format(x.shape))
 
+        x = x.view(-1,512)
+
+        
+
         x = x.view(1, self.n) # (1,101)
+
         x = self.final_mapping(x) # (1,512)
 
         return x
