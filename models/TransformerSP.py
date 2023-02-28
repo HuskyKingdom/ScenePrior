@@ -66,8 +66,8 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.hidden_state_sz = hidden_state_sz
         self.lstm = nn.LSTMCell(lstm_input_sz, hidden_state_sz)
         num_outputs = action_space
-        self.critic_linear = nn.Linear(1024, 1)
-        self.actor_linear = nn.Linear(1024, num_outputs)
+        self.critic_linear = nn.Linear(512, 1)
+        self.actor_linear = nn.Linear(512, num_outputs)
 
         
 
