@@ -138,20 +138,29 @@ class TRANSFORMER_SP(torch.nn.Module):
         return objstate, class_onehot
 
     def new_gcn_embed(self, objstate, class_onehot):
+
         class_word_embed = torch.cat((class_onehot.repeat(self.n, 1), self.all_glove.detach()), dim=1) # (101,101+300) -> (101,401) 
         x = torch.mm(self.A, class_word_embed) 
+
         x = F.relu(self.W0(x)) # (101,401)
-        x = torch.mm(self.A, x) 
+
+        x = x.uns
+
+        x = self.TFencoder(x,None)
+
+
+        """x = torch.mm(self.A, x) 
         x = F.relu(self.W1(x)) # (101,401)
         x = torch.mm(self.A, x) 
         x = F.relu(self.W2(x)) # (101,5)
         x = torch.cat((x, objstate), dim=1) # (101,5) -> (101,10)  
         x = torch.mm(self.A, x)
-        x = F.relu(self.W3(x)) # (101,1) = self.last_mapping(x) # (1,512)
+        x = F.relu(self.W3(x)) # (101,1) = self.last_mapping(x) # (1,512)"""
 
 
         x = x.view(1, self.n) # (1,101)
         x = self.final_mapping(x) # (1,512)
+
         return x
 
     def embedding(self, state, target, action_probs, objbb):
@@ -169,52 +178,30 @@ class TRANSFORMER_SP(torch.nn.Module):
 
     def a3clstm(self, embedding, prev_hidden): # embedding :(1,1027) 
 
-
-        if self.K_frame % 60 == 0:
-            self.embuffer.append(embedding) 
-            print("buffer += 1 ---------------------")
-        
-        self.K_frame += 1 
-
-        # cating buffer
-
-        buffer_items = list(self.embuffer)
-
-        x = torch.cat((buffer_items[0],buffer_items[1]), dim=0) # (2,1027)
-
-        x = self.mid_mapping(x) # (2,512)
-
-        x = x.unsqueeze(0) # (1,2,512) adding batch size
-
-        x = self.TFencoder(x,None) # embedding : (1,2,512)
-
-        # x = self.transformer_encoder(x)
-
-        x = x.view(1,-1) # (1,1024)
-
+        hx, cx = self.lstm(embedding, prev_hidden)
+        x = hx
         actor_out = self.actor_linear(x)
         critic_out = self.critic_linear(x)
+        return actor_out, critic_out, (hx, cx)
 
-
-        return actor_out, critic_out, x
 
     def forward(self, model_input, model_options):
 
         state = model_input.state
         
         objbb = model_input.objbb
-        p_embedding = model_input.hidden
+        (hx, cx) = model_input.hidden
 
         target = model_input.target_class_embedding
         action_probs = model_input.action_probs
         x, image_embedding = self.embedding(state, target, action_probs, objbb)
 
-        actor_out, critic_out, out = self.a3clstm(x, p_embedding)
+        actor_out, critic_out, (hx, cx) = self.a3clstm(x, (hx, cx))
 
 
         return ModelOutput(
             value=critic_out,
             logit=actor_out,
-            hidden=out,
+            hidden=(hx, cx),
             embedding=image_embedding,
         )
