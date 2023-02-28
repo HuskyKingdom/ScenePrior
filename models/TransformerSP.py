@@ -50,7 +50,7 @@ class TRANSFORMER_SP(torch.nn.Module):
         self.TFencoder = TransformerEncoder(200,512,512,512,512,[2,512],512,1024,2,4,0,use_bias=True)
         # self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8,batch_first=True)
         # self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=6)
-        self.mid_mapping = nn.Linear(1027,512)
+        self.sup_embedding = nn.Linear(401,512)
         self.embuffer = deque(maxlen=2)
         self.K_frame = 0
         
@@ -140,11 +140,13 @@ class TRANSFORMER_SP(torch.nn.Module):
     def new_gcn_embed(self, objstate, class_onehot):
 
         class_word_embed = torch.cat((class_onehot.repeat(self.n, 1), self.all_glove.detach()), dim=1) # (101,101+300) -> (101,401) 
-        x = torch.mm(self.A, class_word_embed) 
 
+        x = torch.mm(self.A, class_word_embed) 
         x = F.relu(self.W0(x)) # (101,401)
 
         x = x.unsqueeze(0) # (1,101,401)
+
+        x = F.relu(self.sup_embedding(x)) # (1,101,512)
 
         x = self.TFencoder(x,None) # (1,101,512)
 
@@ -157,6 +159,9 @@ class TRANSFORMER_SP(torch.nn.Module):
         x = torch.mm(self.A, x)
         x = F.relu(self.W3(x)) # (101,1) = self.last_mapping(x) # (1,512)"""
 
+        x = x.view(-1,512)
+
+        print("x is now in the shape {}".format(x.shape))
 
         x = x.view(1, self.n) # (1,101)
         x = self.final_mapping(x) # (1,512)
